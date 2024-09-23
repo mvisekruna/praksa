@@ -4,6 +4,7 @@ import com.vega.praksa.model.User;
 import com.vega.praksa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +24,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public User findById(@PathVariable Long id) {
         return this.userService.findById(id);
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<User> getAllUsers() {
         return this.userService.getAllUsers();
     }

@@ -17,9 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -74,7 +72,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(restAuthenticationEntryPoint));
 
         http.authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> {})
@@ -90,8 +88,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
-                        .requestMatchers(HttpMethod.GET, "/", "/webjars/**", "/*.html", "favicon.ico",
-                                "/**/*.html", "/**/*.js");
+                        .requestMatchers(HttpMethod.GET, "/", "/webjars/*", "/*.html", "favicon.ico",
+                                "/*/*.html", "/*/*.js");
     }
 
 }

@@ -15,8 +15,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
 public class User implements UserDetails {
 
     @Serial
@@ -27,25 +25,37 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Getter
+    @Setter
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @Getter
     @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Getter
+    @Setter
     @Column(name = "firstName", nullable = false)
     private String firstName;
 
+    @Getter
+    @Setter
     @Column(name = "lastName", nullable = false)
     private String lastName;
 
+    @Getter
+    @Setter
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Getter
+    @Setter
     @Column(name = "dateOfBirth")
     private Date dateOfBirth;
 
+    @Setter
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -54,9 +64,12 @@ public class User implements UserDetails {
     )
     private List<Role> roles;
 
+    @Setter
     @Column(name = "enabled")
     private boolean enabled;
 
+    @Getter
+    @Setter
     @Column(name = "lastPasswordResetDate")
     private Timestamp lastPasswordResetDate;
 

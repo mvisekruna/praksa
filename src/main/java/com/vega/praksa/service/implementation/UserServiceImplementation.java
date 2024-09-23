@@ -1,8 +1,10 @@
 package com.vega.praksa.service.implementation;
 
 import com.vega.praksa.dto.UserRequest;
+import com.vega.praksa.model.Role;
 import com.vega.praksa.model.User;
 import com.vega.praksa.repository.UserRepository;
+import com.vega.praksa.service.RoleService;
 import com.vega.praksa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +19,13 @@ public class UserServiceImplementation implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RoleService roleService;
+
     @Autowired
-    public UserServiceImplementation(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImplementation(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
     }
 
     @Override
@@ -47,9 +52,17 @@ public class UserServiceImplementation implements UserService {
         user.setEmail(userRequest.getEmail());
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
-        user.setEnabled(true);
+        user.setEnabled(false);
+
+        List<Role> roles = this.roleService.findByName("ROLE_CONSUMER");
+        user.setRoles(roles);
 
         return this.userRepository.save(user);
+    }
+
+    @Override
+    public void saveUser(User user) {
+        this.userRepository.save(user);
     }
 
 }

@@ -144,9 +144,8 @@ public class TokenUtils {
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
         try {
-            String encodedSecret = Base64.getEncoder().encodeToString(SECRET.getBytes());
             claims = Jwts.parser()
-                    .setSigningKey(encodedSecret.getBytes())
+                    .setSigningKey(SECRET.getBytes())
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException ex) {
