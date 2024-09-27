@@ -29,6 +29,15 @@ public class EmailServiceImplementation implements EmailService {
         sendMail(to, subject, content);
     }
 
+    @Override
+    public void sendResetPasswordEmail(String to, String resetUrl) throws MessagingException {
+        String subject = "Password Reset Request";
+        String content = "<p>Click the link below to reset your password:</p>"
+                + "<p><a href=\"" + resetUrl + "\">Reset Password</a></p>";
+
+        sendMail(to, subject, content);
+    }
+
     private void sendMail(String to, String subject, String content) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);

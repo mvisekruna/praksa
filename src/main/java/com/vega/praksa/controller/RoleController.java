@@ -11,6 +11,7 @@ import com.vega.praksa.service.UserService;
 import com.vega.praksa.service.VerificationTokenService;
 import com.vega.praksa.util.TokenUtils;
 import jakarta.mail.MessagingException;
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -104,4 +106,45 @@ public class RoleController {
 
         return new ResponseEntity<>("User verified successfully.", HttpStatus.OK);
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Object> changePassword(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
+        try {
+            this.userService.changePassword(oldPassword, newPassword);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password changed.");
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Old password is incorrect.");
+        }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam("email") String email) throws MessagingException {
+        User user = this.userService.findByEmail(email);
+
+        if(user == null) {
+            return new ResponseEntity<>("No user found with that email.", HttpStatus.NOT_FOUND);
+        }
+
+        VerificationToken token = new VerificationToken();
+        token.setUser(user);
+        token.setToken(UUID.randomUUID().toString());
+        token.setExpiryDate(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000));
+
+        this.verificationTokenService.saveVerificationToken(token);
+
+        String resetUrl = "http://localhost:8080/auth/reset-password?token=" + token.getToken();
+        this.emailService.sendResetPasswordEmail(email, resetUrl);
+
+        return new ResponseEntity<>("Password reset link sent to your email.", HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword) throws BadRequestException {
+        VerificationToken resetToken = verificationTokenService.findByToken(token);
+
+        this.userService.resetPassword(resetToken, newPassword);
+
+        return new ResponseEntity<>("Password reset successfully.", HttpStatus.OK);
+    }
+
 }
