@@ -73,6 +73,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(requests -> requests
                         .requestMatchers("/auth/*").permitAll()
+                        .requestMatchers("/genres/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> {})
